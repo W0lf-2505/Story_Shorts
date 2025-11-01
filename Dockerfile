@@ -15,6 +15,10 @@ RUN sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy dom
  && sed -i 's/<policy domain="coder" rights="none" pattern="PS" \/>/<policy domain="coder" rights="read|write" pattern="PS" \/>/' /etc/ImageMagick-6/policy.xml || true \
  && sed -i 's/<policy domain="coder" rights="none" pattern="EPS" \/>/<policy domain="coder" rights="read|write" pattern="EPS" \/>/' /etc/ImageMagick-6/policy.xml || true
 
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="PDF"/<policy domain="coder" rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="TEXT"/<policy domain="coder" rights="read|write" pattern="TEXT"/' /etc/ImageMagick-6/policy.xml || true
+
+
 WORKDIR /app
 
 # Copy dependency list & install Python libs
