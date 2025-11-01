@@ -12,6 +12,7 @@ parser.add_argument("--bg", required=True, help="Path to background video")
 parser.add_argument("--output", required=True, help="Output rendered video path")
 
 args = parser.parse_args()
+print(args)
 
 
 def group_words(captions, group_size=5):
