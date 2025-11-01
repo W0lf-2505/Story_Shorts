@@ -104,5 +104,5 @@ def burn_subtitles(video_file, srt_file, audio_file, output_file):
     video_with_subs = srt_to_moviepy_subtitles(srt_file, video_clip)
     video_with_subs.write_videofile(output_file, codec='libx264')
 
-burn_subtitles(args.bg, args.str, args.audio, args.output)
+burn_subtitles(args.bg, args.srt, args.audio, args.output)
 
