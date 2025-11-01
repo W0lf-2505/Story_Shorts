@@ -14,10 +14,6 @@ parser.add_argument("--output", required=True, help="Output rendered video path"
 args = parser.parse_args()
 
 
-from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
-
-
 def group_words(captions, group_size=5):
     grouped = []
     for i in range(0, len(captions), group_size):
