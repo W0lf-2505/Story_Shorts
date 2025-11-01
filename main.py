@@ -50,17 +50,6 @@ def srt_to_moviepy_subtitles(srt_file, video_clip):
 
     for subs in full_subs:
 
-        all_text_clips = []
-        print(subs)
-        full_text = " ".join([w.text.replace('\n',' ') for w in subs])
-        caption_start = subs[0].start.to_time()
-        caption_end = subs[-1].end.to_time()
-        
-        caption_start_seconds = caption_start.hour * 3600 + caption_start.minute * 60 + caption_start.second + caption_start.microsecond / 1e6
-        caption_end_seconds = caption_end.hour * 3600 + caption_end.minute * 60 + caption_end.second + caption_end.microsecond / 1e6
-        caption_duration = caption_end_seconds - caption_start_seconds
-
-
         for sub in subs:
 
             

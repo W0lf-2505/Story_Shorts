@@ -14,9 +14,13 @@ RUN apt update && apt install -y \
 # --- Fix ImageMagick policies for Pango/MoviePy (IM7) ---
 RUN sed -i 's#<policy domain="coder" rights="none" pattern="PDF"#<policy domain="coder" rights="read|write" pattern="PDF"#' /etc/ImageMagick-7/policy.xml || true \
  && sed -i 's#<policy domain="coder" rights="none" pattern="PS"#<policy domain="coder" rights="read|write" pattern="PS"#' /etc/ImageMagick-7/policy.xml || true \
- && sed -i 's#<policy domain="coder" rights="none" pattern="EPS"#<policy domain="coder" rights="read|write" pattern="EPS"#' /etc/ImageMagick-7/policy.xml || true \
- && sed -i 's#<policy domain="coder" rights="none" pattern="TEXT"#<policy domain="coder" rights="read|write" pattern="TEXT"#' /etc/ImageMagick-7/policy.xml || true \
- && sed -i 's#<policy domain="coder" rights="none" pattern="MVG"#<policy domain="coder" rights="read|write" pattern="MVG"#' /etc/ImageMagick-7/policy.xml || true
+ && sed -i 's#<policy domain="coder" rights="none" pattern="EPS"#<policy domain="coder" rights="read|write" pattern="EPS"#' /etc/ImageMagick-7/policy.xml || true 
+
+RUN sed -i 's/rights="none" pattern="@\*"/rights="read|write" pattern="@*"/' /etc/ImageMagick-7/policy.xml
+
+RUN echo '<policy domain="path" rights="read" pattern="/tmp/*.txt"/>' >> /etc/ImageMagick-7/policy.xml
+
+
 
 WORKDIR /app
 
