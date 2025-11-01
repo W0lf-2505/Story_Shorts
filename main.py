@@ -77,7 +77,7 @@ def burn_subtitles(video_file, srt_file, audio_file, output_file):
     audio = AudioFileClip(audio_file)
     video_clip = video_clip.set_audio(audio)
         
-    video_clip = video_clip.subclip(0, 10)
+    video_clip = video_clip.subclip(0, audio.length)
         
     video_clip = resize(video_clip, height=1920)
     # Then crop width to 1080 center
