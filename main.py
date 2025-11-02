@@ -11,14 +11,15 @@ parser.add_argument("--audio", required=True, help="Path to audio file")
 parser.add_argument("--bg", required=True, help="Path to background video")
 parser.add_argument("--output", required=True, help="Output rendered video path")
 parser.add_argument("--gpu", action="store_true", help="Enable GPU accelerated rendering")
+parser.add_argument("--sen", action="store_true", help="get sentence level captions")
 
 
 args = parser.parse_args()
 print(args)
 
 
-# from moviepy.config import change_settings
-# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
+from moviepy.config import change_settings
+change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
 
 def group_words(captions, group_size=5):
     grouped = []
@@ -28,7 +29,6 @@ def group_words(captions, group_size=5):
     return grouped
 
 HIGHLIGHT_COLORS = cycle([
-    "#FFEA00",  # Neon Yellow
     "#39FF14",  # Neon Green
     "#FF007F",  # Hot Pink
     "#00C6FF",  # Electric Blue
@@ -40,14 +40,42 @@ def get_next_color():
     return next(HIGHLIGHT_COLORS)
 
 def srt_to_moviepy_subtitles(srt_file, video_clip):
-    full_subs = group_words(pysrt.open(srt_file))
     subtitle_clips = []
 
-    for subs in full_subs:
-
-        for sub in subs:
-
+    if args.sen:
             
+        full_subs = group_words(pysrt.open(srt_file))
+        for subs in full_subs:
+            for sub in subs:
+
+                start_time = sub.start.to_time()
+                end_time = sub.end.to_time()
+                start_seconds = start_time.hour * 3600 + start_time.minute * 60 + start_time.second + start_time.microsecond / 1e6
+                end_seconds = end_time.hour * 3600 + end_time.minute * 60 + end_time.second + end_time.microsecond / 1e6
+                duration = end_seconds - start_seconds
+                
+                base_text = subs.text.replace('\n', ' ')  # full sentence
+                word_text = sub.text.replace('\n', ' ')   # current word to highlight
+
+                highlighted = f'<span font="Sans Bold 55" foreground="{get_next_color()}">{word_text}</span>'
+
+                
+                formatted_text = base_text.replace(word_text, highlighted, 1)
+                formatted_text = f'<span font="Sans Bold 50" foreground="yellow">{formatted_text}</span>'
+
+                # Create a text clip with a black background and white text
+                text_clip = (TextClip(formatted_text, fontsize=50, color='yellow', method='pango', size=(video_clip.w - 20, None))
+                    .set_start(start_seconds)
+                    .set_duration(duration)
+                    .set_position(('center', 'center')))  # Position center
+                
+                subtitle_clips.append(text_clip)
+
+
+    else:    
+        word_subs = pysrt.open(srt_file)
+
+        for sub in word_subs:
             start_time = sub.start.to_time()
             end_time = sub.end.to_time()
             start_seconds = start_time.hour * 3600 + start_time.minute * 60 + start_time.second + start_time.microsecond / 1e6
