@@ -54,10 +54,10 @@ def srt_to_moviepy_subtitles(srt_file, video_clip):
             end_seconds = end_time.hour * 3600 + end_time.minute * 60 + end_time.second + end_time.microsecond / 1e6
             duration = end_seconds - start_seconds
             
-            formatted_text = '<span font="Sans Bold 120" foreground="'+get_next_color()+'">'+sub.text.replace('\n',' ') + '</span>'
+            formatted_text = '<span font="Sans Bold 70" foreground="'+get_next_color()+'">'+sub.text.replace('\n',' ') + '</span>'
 
             # Create a text clip with a black background and white text
-            text_clip = (TextClip(formatted_text, fontsize=70, color='yellow', method='pango', size=(video_clip.w - 20, None))
+            text_clip = (TextClip(formatted_text, fontsize=50, color='yellow', method='pango', size=(video_clip.w - 20, None))
                 .set_start(start_seconds)
                 .set_duration(duration)
                 .set_position(('center', 'center')))  # Position center
