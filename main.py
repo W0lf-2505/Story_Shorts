@@ -18,8 +18,8 @@ args = parser.parse_args()
 print(args)
 
 
-from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
+# from moviepy.config import change_settings
+# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
 
 def group_words(captions, group_size=5):
     grouped = []
