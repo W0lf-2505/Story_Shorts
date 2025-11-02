@@ -10,10 +10,15 @@ parser.add_argument("--srt", required=True, help="Path to subtitle .srt file")
 parser.add_argument("--audio", required=True, help="Path to audio file")
 parser.add_argument("--bg", required=True, help="Path to background video")
 parser.add_argument("--output", required=True, help="Output rendered video path")
+parser.add_argument("--gpu", action="store_true", help="Enable GPU accelerated rendering")
+
 
 args = parser.parse_args()
 print(args)
 
+
+# from moviepy.config import change_settings
+# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
 
 def group_words(captions, group_size=5):
     grouped = []
@@ -37,17 +42,6 @@ def get_next_color():
 def srt_to_moviepy_subtitles(srt_file, video_clip):
     full_subs = group_words(pysrt.open(srt_file))
     subtitle_clips = []
-
-    # --- 2. Configuration ---
-    VIDEO_FILE = "input.mp4"
-    OUTPUT_FILE = "output_highlighted.mp4"
-    FONT = "Arial"
-    FONTSIZE = 40
-    COLOR = 'white'
-    HIGHLIGHT_COLOR = 'yellow'
-    STROKE_COLOR = 'black'
-    STROKE_WIDTH = 1.5
-    POSITION = ("center", "center")
 
     for subs in full_subs:
 
@@ -80,15 +74,40 @@ def burn_subtitles(video_file, srt_file, audio_file, output_file):
         
     video_clip = video_clip.subclip(0, audio.duration)
         
-    video_clip = resize(video_clip, height=1920)
-    # Then crop width to 1080 center
+    video_clip = resize(video_clip, height=1280)
+    # Then crop width to 720 center
     w, h = video_clip.size
     x_center = w / 2
-    video_clip = crop(video_clip, x1=x_center-540, x2=x_center+540)
+    video_clip = crop(video_clip, x1=x_center-360, x2=x_center+360)
     
 
     video_with_subs = srt_to_moviepy_subtitles(srt_file, video_clip)
-    video_with_subs.write_videofile(output_file, codec='libx264')
+
+    if args.gpu:
+        print("Using GPU encoding (h264_nvenc)")
+        video_with_subs.write_videofile(
+            args.output,
+            codec="h264_nvenc",
+            fps=30,
+            bitrate="3500k",
+            ffmpeg_params=[
+                "-preset", "p5",
+                "-rc", "vbr",
+                "-pix_fmt", "yuv420p",   # REQUIRED to prevent green frames
+                "-profile:v", "high",
+                "-movflags", "+faststart",
+                "-c:a", "copy"           # Keep original audio exactly
+            ]
+        )
+
+    else:
+        print("Using CPU encoding (libx264)")
+        video_with_subs.write_videofile(output_file,codec="libx264",
+        audio_codec="aac",
+        fps=30,
+        bitrate="3500k",
+        ffmpeg_params=["-preset", "fast", "-movflags", "+faststart"]
+    )
 
 burn_subtitles(args.bg, args.srt, args.audio, args.output)
 
