@@ -103,7 +103,6 @@ def burn_subtitles(video_file, srt_file, audio_file, output_file):
     else:
         print("Using CPU encoding (libx264)")
         video_with_subs.write_videofile(output_file,codec="libx264",
-        audio_codec="aac",
         fps=30,
         bitrate="3500k",
         ffmpeg_params=["-preset", "fast", "-movflags", "+faststart"]
