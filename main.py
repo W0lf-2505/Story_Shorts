@@ -3,6 +3,7 @@ import pysrt
 from moviepy.video.fx.all import resize, crop
 from itertools import cycle
 from argparse import ArgumentParser
+from platform import system
 
 parser = ArgumentParser()
 
@@ -17,9 +18,9 @@ parser.add_argument("--sen", action="store_true", help="get sentence level capti
 args = parser.parse_args()
 print(args)
 
-
-# from moviepy.config import change_settings
-# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
+if system() == "Windows":
+    from moviepy.config import change_settings
+    change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"})
 
 def group_words(captions, group_size=5):
     grouped = []
@@ -98,6 +99,13 @@ def srt_to_moviepy_subtitles(srt_file, video_clip):
 def burn_subtitles(video_file, srt_file, audio_file, output_file):
     video_clip = VideoFileClip(video_file).without_audio()
     audio = AudioFileClip(audio_file)
+
+    # 1) Boost Loudness (e.g., +6dB boost)
+    audio = audio.volumex(3.0)   # 2.0 = double volume (~ +6dB)
+
+    # 2) Convert to Stereo (duplicate mono channel into 2 channels)
+    # audio = boosted.set_channels(2)
+
     video_clip = video_clip.set_audio(audio)
         
     video_clip = video_clip.subclip(0, audio.duration)
